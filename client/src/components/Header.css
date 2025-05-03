@@ -1,0 +1,225 @@
+.header_section {
+  background: #fff;
+  box-shadow: 0 2px 15px rgba(0,0,0,0.07);
+  position: fixed;
+  width: 100%;
+  top: 0; left: 0; z-index: 1000;
+  min-height: 70px;
+}
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 70px;
+}
+.header-logo {
+  font-size: 28px;
+  font-weight: 700;
+  color: #007bff;
+  text-decoration: none;
+  padding: 16px 0;
+  transition: color 0.3s;
+}
+.header-logo:hover { color: #0056b3; }
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+}
+.header-nav ul {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.header-nav li { margin: 0; }
+.header-nav a {
+  color: #333;
+  font-weight: 500;
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-size: 17px;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  transition: all 0.2s;
+  background: none;
+  border: none;
+  outline: none;
+  position: relative;
+}
+.header-nav a.active,
+.header-nav a:focus,
+.header-nav a:hover {
+  color: #fff;
+  background: linear-gradient(90deg, #007bff 60%, #0056b3 100%);
+  box-shadow: 0 2px 8px rgba(0,123,255,0.08);
+}
+.header-btn {
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  margin-left: 28px;
+  background: #007bff;
+  border: 2px solid #007bff;
+  color: #fff;
+  font-size: 17px;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+.header-btn:hover {
+  background: #fff;
+  color: #007bff;
+  border-color: #007bff;
+}
+.header-burger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 18px;
+}
+.header-burger span {
+  display: block;
+  width: 28px;
+  height: 3px;
+  background: #007bff;
+  border-radius: 2px;
+  transition: all 0.2s;
+}
+
+/* Sadece admin header'ı için */
+.header-container.admin-header .header-nav ul {
+  /* Linkleri sağa kaydır */
+  gap: 14px;         /* Linkler arası mesafe azaltıldı */
+}
+
+.header-container.admin-header .header-btn {
+  margin-left: 48px; /* Çıkış butonunu daha sağa al */
+}
+
+.header-notification {
+  position: relative;
+  margin-left: 16px;
+  display: inline-block;
+}
+.notification-btn {
+  background: none;
+  border: none;
+  position: relative;
+  cursor: pointer;
+  font-size: 20px;
+}
+.notification-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #dc3545;
+  color: #fff;
+  border-radius: 50%;
+  padding: 2px 7px;
+  font-size: 12px;
+  font-weight: bold;
+}
+.notification-dropdown {
+  position: absolute;
+  right: 0;
+  top: 36px;
+  min-width: 220px;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+  z-index: 100;
+  padding: 8px 0;
+  max-height: 320px;
+  overflow-y: auto;
+}
+.notification-item {
+  padding: 8px 16px;
+  font-size: 15px;
+  color: #222;
+  border-bottom: 1px solid #f1f1f1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.notification-item:last-child {
+  border-bottom: none;
+}
+.notification-date {
+  font-size: 12px;
+  color: #888;
+}
+.notification-empty {
+  padding: 16px;
+  text-align: center;
+  color: #888;
+  font-size: 15px;
+}
+
+@media (max-width: 991px) {
+  
+  .header-container { flex-wrap: wrap; }
+  .header-burger { display: flex; }
+  .header-nav {
+    position: absolute;
+    top: 70px; right: 0; left: 0;
+    background: #fff;
+    flex-direction: column;
+    align-items: center; /* Ortala */
+    gap: 0;
+    padding: 16px 24px 12px 24px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+    display: none;
+  }
+  .header-nav.open { display: flex; }
+  .header-nav ul {
+    flex-direction: column;
+    width: 100%;
+    gap: 0;
+    align-items: center; /* Ortala */
+  }
+  .header-nav li {
+    width: 100%;
+    margin: 5px 0;
+    display: flex;
+    justify-content: center; /* Ortala */
+  }
+  .header-nav a {
+    width: 100%;
+    text-align: center; /* Ortala */
+    padding: 12px 0;
+    font-size: 18px;
+    border-radius: 0;
+    background: none;
+    transition: background 0.2s, color 0.2s;
+  }
+  .header-nav a.active,
+  .header-nav a:focus,
+  .header-nav a:hover {
+    color: #fff;
+    background: linear-gradient(90deg, #007bff 60%, #0056b3 100%);
+    box-shadow: none;
+    border-radius: 0;
+    width: 100%;
+    text-align: center;
+  }
+  .header-btn {
+    margin: 10px 0 0 0 !important;
+    width: 100%;
+    display: block;
+    text-align: center;
+  }
+  .header-container.admin-header .header-btn {
+    margin-left: 0 !important;
+  }
+}
+body { padding-top: 80px; }
+

@@ -1,0 +1,213 @@
+.stocks-page {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.stocks-content {
+  padding: 60px 0 60px;
+}
+
+.stocks-header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding: 40px 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.stocks-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  background: #007bff;
+  border-radius: 2px;
+}
+
+.stocks-header h1 {
+  color: #2c3e50;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.stocks-header h1 span {
+  color: #007bff;
+}
+
+.stocks-header p {
+  color: #6c757d;
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Market Tables Styles */
+.market-tables {
+  margin-top: 40px;
+}
+
+.market-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.market-tab {
+  padding: 18px 26px;
+  border: none;
+  background: transparent;
+  color: #666;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-bottom: 2px solid transparent;
+
+  outline: none;
+}
+
+.market-tab:hover {
+  color: #007bff;
+}
+
+.market-tab.active {
+  color: #007bff;
+  border-bottom-color: #007bff;
+}
+
+.market-tab i {
+  font-size: 12px;
+  transition: transform 0.3s ease;
+}
+
+.market-tab:hover i {
+  transform: translateY(2px);
+}
+
+.market-tab:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Market Section */
+.market-section {
+  padding: 0; /* İçerik boşluğunu kaldır */
+  margin: 0 auto; /* Ortalamak için */
+  max-width: 100%; /* Tam genişlik */
+}
+
+/* Tablo Konteyneri */
+.table-responsive {
+  overflow-x: auto; /* Yatay kaydırmayı etkinleştir */
+  margin: 0 auto; /* Ortalamak için */
+  padding: 0; /* İçerik boşluğunu kaldır */
+}
+
+
+/* Tablo */
+.market-table {
+  width: 100%; /* Tablo genişliği kapsayıcıya uyacak şekilde ayarlanır */
+  border-collapse: collapse; /* Hücre kenarlarını birleştir */
+  font-size: 0.9rem;
+  background: transparent; /* Arka planı kaldır */
+}
+
+/* Tablo Başlıkları */
+.market-table th {
+  background: #007bff; /* Mavi arka plan */
+  color: #ffffff; /* Beyaz yazı */
+  font-weight: 600;
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 2px solid #dee2e6;
+  white-space: nowrap; /* Metni tek satırda tut */
+  font-size: 0.85rem;
+}
+
+/* Tablo Hücreleri */
+.market-table td {
+  padding: 10px 15px;
+  border-bottom: 1px solid #dee2e6;
+  color: #2c3e50;
+  white-space: nowrap; /* Metni tek satırda tut */
+  font-size: 0.85rem;
+}
+/* Tablo Satırları */
+.market-table tr:hover {
+  background-color: #f1f1f1; /* Hover sırasında hafif gri arka plan */
+}
+
+/* Sembol Sütunu */
+.market-table .symbol {
+  font-weight: 700;
+  color: #007bff;
+  font-size: 0.9rem;
+}
+
+/* Fiyat Sütunu */
+.market-table .price {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* En Yüksek ve En Düşük Sütunları */
+.market-table .high {
+  color: #28a745; /* Yeşil */
+  font-size: 0.85rem;
+}
+
+.market-table .low {
+  color: #dc3545; /* Kırmızı */
+  font-size: 0.85rem;
+}
+
+/* Değişim Sütunu */
+.market-table .change {
+  font-weight: 600;
+  padding: 7px 20px;
+  border-radius: 4px;
+  display: inline-block;
+  min-width: 80px;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+.market-table .change.positive {
+  color: #28a745; /* Yeşil */
+  background-color: rgba(40, 167, 69, 0.1); /* Şeffaf yeşil arka plan */
+}
+
+.market-table .change.negative {
+  color: #dc3545; /* Kırmızı */
+  background-color: rgba(220, 53, 69, 0.1); /* Şeffaf kırmızı arka plan */
+}
+
+/* Tahmin Sütunları */
+.prediction-cell {
+  text-align: center;
+  font-weight: 600;
+}
+
+.prediction-cell.blurred {
+  filter: blur(5px); /* Bulanıklaştırma efekti */
+  pointer-events: none; /* Tıklamayı devre dışı bırak */
+  opacity: 0.6; /* Hafif şeffaflık */
+}
+
+/* Mobil Uyumluluk */
+@media (max-width: 768px) {
+  .market-table {
+    font-size: 0.8rem; /* Daha küçük yazı boyutu */
+  }
+
+  .market-table th,
+  .market-table td {
+    padding: 8px 10px; /* Daha küçük hücre boşlukları */
+  }
+}

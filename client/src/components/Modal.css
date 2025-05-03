@@ -1,0 +1,157 @@
+/* Modal arka planı */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* Daha koyu bir arka plan */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease; /* Açılma animasyonu */
+}
+
+/* Modal kutusu */
+.modal-container {
+  background: #ffffff; /* Beyaz arka plan */
+  border-radius: 12px; /* Yuvarlatılmış köşeler */
+  width: 450px; /* Genişlik */
+  max-width: 90%; /* Mobil uyumluluk */
+  box-shadow: 0 8px 16px rgba(231, 153, 153, 0.2); /* Hafif gölge */
+  animation: slideIn 0.3s ease; /* Kayarak açılma animasyonu */
+  overflow: hidden; /* Taşan içeriği gizle */
+}
+
+/* Modal başlığı */
+.modal-header {
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #ffffff; /* Beyaz yazı */
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+  flex-grow: 1;
+  text-align: center;
+  color: #ffffff; 
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); 
+  font-family: 'Arial', sans-serif; 
+
+}
+
+.modal-close-button {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 20px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.modal-close-button:hover {
+  transform: scale(1.2); /* Hover sırasında büyüme efekti */
+
+}
+
+/* Başlık renkleri */
+.modal-header.success {
+  background-color: #28a745; /* Yeşil (onaylama) */
+}
+
+.modal-header.error {
+  background-color: #dc3545; /* Kırmızı (hata) */
+}
+
+.modal-header.warning {
+  background-color: #ffc107; /* Sarı (uyarı) */
+}
+
+/* Modal içeriği */
+.modal-body {
+  padding: 20px;
+  font-size: 16px;
+  color: #333333;
+  text-align: left;
+}
+
+.modal-body p {
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.modal-body select,
+.modal-body input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+.modal-body select:focus,
+.modal-body input:focus {
+  border-color: #007bff; /* Odaklanıldığında mavi kenarlık */
+  outline: none;
+}
+
+/* Modal alt kısmı */
+.modal-footer {
+  padding: 16px;
+  background-color: #f9f9f9; /* Hafif gri arka plan */
+  text-align: right;
+  border-top: 1px solid #ddd;
+}
+
+.modal-button {
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.modal-button:hover {
+  background-color: #0056b3; /* Daha koyu mavi */
+  transform: translateY(-2px); /* Hover sırasında yukarı hareket */
+}
+
+.cancel-button {
+  background-color: #dc3545; /* Kırmızı */
+  margin-left: 10px;
+}
+
+.cancel-button:hover {
+  background-color: #c82333; /* Daha koyu kırmızı */
+}
+
+/* Animasyonlar */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}

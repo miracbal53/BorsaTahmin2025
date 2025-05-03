@@ -1,0 +1,30 @@
+.error-page {
+    text-align: center;
+    padding: 50px;
+    background-color: #f9f9f9;
+    color: #333;
+  }
+  
+  .error-page h1 {
+    font-size: 36px;
+    color: #dc3545; /* Kırmızı */
+  }
+  
+  .error-page p {
+    font-size: 18px;
+    margin: 20px 0;
+  }
+  
+  .error-page button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .error-page button:hover {
+    background-color: #0056b3;
+  }
