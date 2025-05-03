@@ -1,0 +1,75 @@
+# Python ile ilgili dosyalar
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.sqlite3
+*.log
+
+# Çalışma ortamı dosyaları
+.env
+*.env
+
+# IDE ve editör dosyaları
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# İşletim sistemi dosyaları
+.DS_Store
+Thumbs.db
+
+# Node.js ile ilgili dosyalar
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# React build dosyaları
+build/
+
+# pytest cache dosyaları
+.pytest_cache/
+
+# Migration cache dosyaları
+migrations/__pycache__/
+migrations/versions/__pycache__/
+
+# TensorFlow ve model dosyaları
+models_simple/
+*.h5
+*.joblib
+*.ckpt
+
+# CSV ve veri dosyaları
+*.csv
+*.xlsx
+*.json
+
+# Logs ve geçici dosyalar
+*.log
+*.bak
+*.tmp
+
+# Diğer
+*.swp
+*.lock
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Node.js
+node_modules/
+client/node_modules/
+client/.env
+
+# VSCode
+.vscode/
+
+# Diğer
+*.log
+.DS_Store

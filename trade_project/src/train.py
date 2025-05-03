@@ -1,124 +1,119 @@
-# BU KOD GOOGLE COLAB'TA ÇALIŞIYOR
-
 import pandas as pd
 import numpy as np
-import os
 import matplotlib.pyplot as plt
-from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
-import tensorflow as tf
-from tensorflow.keras.models import Sequential, Model
-from tensorflow.keras.layers import LSTM, Bidirectional, Dense, Dropout, BatchNormalization, Attention, Input
-from tensorflow.keras.callbacks import ModelCheckpoint, CSVLogger, EarlyStopping
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense, Bidirectional, Dropout, Input
+from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
+import os
+import joblib
 
-# CSV dosyasını yükleyin
-file_path = '/content/drive/MyDrive/Colab Notebooks/FinancialForecast/market_data.csv'
-df = pd.read_csv(file_path)
+# Klasör oluştur
+os.makedirs("models_simple", exist_ok=True)
 
-# Drop unnecessary columns
-df = df.drop(columns=["id", "symbol", "timestamp"])
+# Veri yükle
+df = pd.read_csv("/content/drive/MyDrive/Colab Notebooks/FinancialForecast/market_data.csv", parse_dates=['timestamp'])
+df = df.dropna()
+df = df.sort_values(by=['symbol', 'timestamp'])
 
-# Function to apply One-Hot Encoding
-def one_hot_encode(df, columns):
-    encoder = OneHotEncoder(sparse_output=False)
-    for column in columns:
-        encoded = encoder.fit_transform(df[[column]])
-        df = pd.concat([df, pd.DataFrame(encoded, columns=encoder.get_feature_names_out([column]))], axis=1)
-        df = df.drop(columns=[column])
-    return df
+# Parametreler
+features = ['close_price']
+sequence_length = 30
+epochs = 50
+batch_size = 32
 
-# Apply One-Hot Encoding to categorical features
-df = one_hot_encode(df, ['asset_name', 'asset_type'])
-
-# Preprocess data
-scaler = MinMaxScaler(feature_range=(0, 1))
-df[['close_price', 'open_price', 'high_price', 'low_price', 'volume']] = scaler.fit_transform(df[['close_price', 'open_price', 'high_price', 'low_price', 'volume']])
-
-# Create sequences
-def create_sequences(data, seq_length):
-    sequences = []
-    for i in range(len(data) - seq_length):
-        sequences.append(data[i:i + seq_length])
-    return np.array(sequences)
-
-seq_length = 60
-data = create_sequences(df.values, seq_length)
-X = data[:, :-1]
-y = data[:, -1, df.columns.get_loc('close_price')]
-
-# Split data into training and testing sets
-split = int(0.8 * len(X))
-X_train, X_test = X[:split], X[split:]
-y_train, y_test = y[:split], y[split:]
-
-# Reshape data for LSTM
-X_train = X_train.reshape((X_train.shape[0], X_train.shape[1], X_train.shape[2]))
-X_test = X_test.reshape((X_test.shape[0], X_test.shape[1], X_test.shape[2]))
-
-# Yeni LSTM modeli
-def build_advanced_lstm(input_shape):
-    inputs = Input(shape=input_shape)
-
-    # Çift yönlü (Bidirectional) LSTM ile daha iyi öğrenme
-    x = Bidirectional(LSTM(128, return_sequences=True))(inputs)
-    x = Dropout(0.2)(x)
-    x = BatchNormalization()(x)
-
-    # Attention mekanizması ekleyelim
-    attention = Attention()([x, x])
-    x = tf.keras.layers.Concatenate()([x, attention])
-
-    # Daha fazla katman ekleyelim
-    x = Bidirectional(LSTM(64, return_sequences=False))(x)
-    x = Dropout(0.2)(x)
-    x = BatchNormalization()(x)
-
-    # Çıkış katmanı
-    output = Dense(1)(x)
-
-    model = Model(inputs, output)
-    model.compile(optimizer="adam", loss="mean_squared_error")
-
+def get_simple_model(input_shape):
+    model = Sequential([
+        Input(shape=input_shape),
+        Bidirectional(LSTM(64, return_sequences=False)),
+        Dense(32, activation='relu'),
+        Dropout(0.1),
+        Dense(1)
+    ])
+    model.compile(optimizer='adam', loss='mse')
     return model
 
-model = build_advanced_lstm((seq_length - 1, X_train.shape[2]))
+def train_and_save_model(symbol_df, symbol_name):
+    scaler = MinMaxScaler()
+    scaled_data = scaler.fit_transform(symbol_df[features])
 
-# Gerekli dizinleri oluşturun
-os.makedirs('/content/drive/MyDrive/Colab Notebooks/FinancialForecast/models', exist_ok=True)
+    X, y = [], []
+    for i in range(sequence_length, len(scaled_data)):
+        X.append(scaled_data[i-sequence_length:i])
+        y.append(scaled_data[i][0])  # close_price tahmini
 
-# Callbacks
-checkpoint = ModelCheckpoint('/content/drive/MyDrive/Colab Notebooks/FinancialForecast/models/best_model.keras', monitor='val_loss', save_best_only=True, mode='min')
-csv_logger = CSVLogger('/content/drive/MyDrive/Colab Notebooks/FinancialForecast/models/training_log.csv', append=True)
-early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
+    X, y = np.array(X), np.array(y)
 
-# Train the model
-history = model.fit(X_train, y_train, epochs=100, batch_size=32, validation_data=(X_test, y_test), callbacks=[checkpoint, csv_logger, early_stopping])
+    if len(X) == 0:
+        print(f"{symbol_name}: Yetersiz veri, atlanıyor.")
+        return None
 
-# Save the final model
-model.save('/content/drive/MyDrive/Colab Notebooks/FinancialForecast/models/final_model.keras')
+    model = get_simple_model((X.shape[1], X.shape[2]))
 
-# Evaluate the model
-loss = model.evaluate(X_test, y_test)
-print(f'Test Loss: {loss}')
+    safe_name = symbol_name.replace('/', '_').replace('.', '_')
+    model_path = f"models_simple/{safe_name}_model.keras"
+    scaler_path = f"models_simple/{safe_name}_scaler.pkl"
+    result_path = f"models_simple/{safe_name}_prediction.txt"
+    plot_path = f"models_simple/{safe_name}_loss_plot.png"
 
-# Model tahminlerini yap
-y_pred = model.predict(X_test)
+    checkpoint = ModelCheckpoint(model_path, monitor='val_loss', save_best_only=True, verbose=0)
+    early_stop = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True, verbose=0)
 
-# Gerçek ve tahmin edilen kapanış fiyatlarını ölçekten çıkar
-scaler_close = MinMaxScaler(feature_range=(0, 1))
-scaler_close.fit(df[['close_price']])
-y_test_unscaled = scaler_close.inverse_transform(y_test.reshape(-1, 1))
-y_pred_unscaled = scaler_close.inverse_transform(y_pred)
+    history = model.fit(X, y, epochs=epochs, batch_size=batch_size,
+                        validation_split=0.1, callbacks=[checkpoint, early_stop],
+                        verbose=0)
 
-# Sonuçları yazdır
-for i in range(10):
-    print(f"Gerçek: {y_test_unscaled[i][0]}, Tahmin: {y_pred_unscaled[i][0]}")
+    joblib.dump(scaler, scaler_path)
 
-# Gerçek ve tahmin edilen kapanış fiyatlarını karşılaştıran grafik çiz
-plt.figure(figsize=(14, 7))
-plt.plot(y_test_unscaled, color='blue', label='Gerçek Kapanış Fiyatı')
-plt.plot(y_pred_unscaled, color='red', label='Tahmin Edilen Kapanış Fiyatı')
-plt.title('Gerçek ve Tahmin Edilen Kapanış Fiyatları')
-plt.xlabel('Zaman')
-plt.ylabel('Kapanış Fiyatı')
-plt.legend()
-plt.show()
+    last_sequence = scaled_data[-sequence_length:]
+    last_sequence = last_sequence.reshape((1, sequence_length, len(features)))
+    predicted_scaled = model.predict(last_sequence, verbose=0)[0][0]
+
+    dummy = np.zeros((1, len(features)))
+    dummy[0][0] = predicted_scaled
+    predicted_price = scaler.inverse_transform(dummy)[0][0]
+
+    val_size = int(len(X) * 0.1)
+    X_val, y_val = X[-val_size:], y[-val_size:]
+    y_pred_scaled = model.predict(X_val, verbose=0)
+
+    y_val_original = scaler.inverse_transform(np.concatenate([y_val.reshape(-1, 1)] * len(features), axis=1))[:, 0]
+    y_pred_original = scaler.inverse_transform(np.concatenate([y_pred_scaled.reshape(-1, 1)] * len(features), axis=1))[:, 0]
+
+    mae = mean_absolute_error(y_val_original, y_pred_original)
+    rmse = np.sqrt(mean_squared_error(y_val_original, y_pred_original))
+    r2 = r2_score(y_val_original, y_pred_original)
+
+    with open(result_path, 'w') as f:
+        f.write(f"Tahmin edilen sonraki kapanış fiyatı: {predicted_price:.4f}\n")
+        f.write(f"MAE: {mae:.4f}\n")
+        f.write(f"RMSE: {rmse:.4f}\n")
+        f.write(f"R²: {r2:.4f}\n")
+
+    print(f"{symbol_name}: Tahmin -> {predicted_price:.4f} | MAE: {mae:.4f} | RMSE: {rmse:.4f} | R²: {r2:.4f}")
+
+    plt.figure(figsize=(8, 4))
+    plt.plot(history.history['loss'], label='Loss')
+    plt.plot(history.history['val_loss'], label='Validation Loss')
+    plt.title(f'{symbol_name} - Loss Grafiği')
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig(plot_path)
+    plt.close()
+
+    return history.history
+
+symbols = df['symbol'].unique()
+
+for symbol in symbols:
+    symbol_df = df[df['symbol'] == symbol].reset_index(drop=True)
+
+    if len(symbol_df) < (sequence_length + 10):
+        print(f"{symbol}: Veri yetersiz, atlandı.")
+        continue
+
+    train_and_save_model(symbol_df, symbol)

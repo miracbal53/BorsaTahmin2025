@@ -1,7 +1,7 @@
 import requests
 import yfinance as yf
 from binance.client import Client as BinanceClient
-from datetime import datetime
+from datetime import datetime, timedelta
 from trade_project.src.config import API_CONFIG
 import pandas as pd
 
@@ -50,3 +50,51 @@ def get_top_binance_symbols():
     sorted_tickers = sorted(usdt_tickers, key=lambda x: float(x['quoteVolume']), reverse=True)
     top_symbols = [ticker['symbol'] for ticker in sorted_tickers[:5]]
     return top_symbols
+
+def fetch_last_30_days_data(symbol):
+    """Binance API'den son 30 günlük veriyi çeker"""
+    client = BinanceClient(BINANCE_API_KEY, BINANCE_API_SECRET)
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=30)
+
+    klines = client.get_historical_klines(
+        symbol,
+        BinanceClient.KLINE_INTERVAL_1DAY,
+        start_date.strftime("%d %b, %Y"),
+        end_date.strftime("%d %b, %Y")
+    )
+
+    # Veriyi DataFrame'e dönüştür
+    df = pd.DataFrame(klines, columns=[
+        'timestamp', 'open', 'high', 'low', 'close', 'volume', 'close_time',
+        'quote_asset_volume', 'number_of_trades', 'taker_buy_base_asset_volume',
+        'taker_buy_quote_asset_volume', 'ignore'
+    ])
+    df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
+    df['close_price'] = df['close'].astype(float)
+    return df[['timestamp', 'close_price']]
+
+def fetch_last_30_days_bist_data(ticker):
+    """Yahoo Finance API'den son 30 günlük BIST verilerini çeker"""
+    try:
+        end_date = datetime.now()
+        start_date = end_date - timedelta(days=30)
+
+        # Yahoo Finance API'den veriyi çek
+        data = yf.download(ticker, start=start_date.strftime('%Y-%m-%d'), end=end_date.strftime('%Y-%m-%d'))
+
+        # Eğer veri boşsa hata döndür
+        if data.empty:
+            raise ValueError(f"{ticker} için son 30 günlük veri bulunamadı.")
+
+        # Veriyi düzenle
+        data.reset_index(inplace=True)
+        data['timestamp'] = pd.to_datetime(data['Date'])
+        data['close_price'] = data['Close']
+
+        # Gerekli sütunları döndür
+        return data[['timestamp', 'close_price']]
+
+    except Exception as e:
+        print(f"⚠️ {ticker} için veri çekme sırasında bir hata oluştu: {str(e)}")
+        return pd.DataFrame()  # Boş bir DataFrame döndür

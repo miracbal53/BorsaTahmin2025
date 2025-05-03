@@ -1,27 +1,16 @@
 import psycopg2
 from psycopg2 import sql
-from src.config import API_CONFIG
 from datetime import datetime
 import pandas as pd
+from trade_project.src.config import DATABASES
+from trade_project.src.database.db_utils import connect_db
 
-DB_HOST = API_CONFIG['DB_HOST']
-DB_NAME = API_CONFIG['DB_NAME']
-DB_USER = API_CONFIG['DB_USER']
-DB_PASSWORD = API_CONFIG['DB_PASSWORD']
+TRADE_DB_CONFIG = DATABASES['TRADE_DATA']
 
-def connect_db():
-    """Veritabanına bağlanma"""
-    conn = psycopg2.connect(
-        host=DB_HOST,
-        database=DB_NAME,
-        user=DB_USER,
-        password=DB_PASSWORD
-    )
-    return conn
 
 def create_table_if_not_exists():
     """Veri tablosunu oluşturur (Eğer yoksa)"""
-    conn = connect_db()
+    conn = connect_db(TRADE_DB_CONFIG)
     cursor = conn.cursor()
     
     # Tablo var mı kontrol et
@@ -60,7 +49,7 @@ def create_table_if_not_exists():
 
 def insert_data(symbol, asset_name, asset_type, close_price, open_price, high_price, low_price, volume, timestamp):
     """Yeni veriyi veritabanına ekler"""
-    conn = connect_db()
+    conn = connect_db(TRADE_DB_CONFIG)
     cursor = conn.cursor()
     
     try:
@@ -80,7 +69,7 @@ def insert_data(symbol, asset_name, asset_type, close_price, open_price, high_pr
 
 def check_existing_data(asset_name, timestamp):
     """Veritabanında mevcut veriyi kontrol eder"""
-    conn = connect_db()
+    conn = connect_db(TRADE_DB_CONFIG)
     cursor = conn.cursor()
     
     cursor.execute("""
@@ -95,8 +84,9 @@ def check_existing_data(asset_name, timestamp):
 
 def load_data():
     """Veritabanından verileri yükler"""
-    conn = connect_db()
-    query = "SELECT * FROM market_data ORDER BY timestamp"
+    conn = connect_db(TRADE_DB_CONFIG)
+    query = "SELECT asset_name, close_price, open_price, high_price, low_price, volume, timestamp FROM market_data ORDER BY timestamp"
     df = pd.read_sql(query, conn)
     conn.close()
     return df
+
