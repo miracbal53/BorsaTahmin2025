@@ -2,6 +2,9 @@
 
 **BorsaTahmin2025**, kullanıcıların borsa, kripto ve forex piyasalarını takip edebileceği, yapay zeka destekli tahminler alabileceği ve özel abonelik planlarıyla finansal analizlere erişebileceği kapsamlı bir platformdur. Bu proje, hem kullanıcılar hem de adminler için farklı işlevler sunarak finansal dünyayı daha erişilebilir hale getirir.
 
+## Proje Tanıtım Videosu
+
+[![Proje Tanıtım Videosu](https://img.youtube.com/vi/TZ--GgQeESQ/0.jpg)](https://www.youtube.com/watch?v=TZ--GgQeESQ)
 ---
 
 ## Özellikler
